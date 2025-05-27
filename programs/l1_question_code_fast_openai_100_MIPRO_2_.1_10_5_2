@@ -1,0 +1,12 @@
+{
+  "prog": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature_instructions": "Grade a code snippet according to how well it answers a question on a scale of 0-10. Use the gold standard to guide your grading. ",
+    "signature_prefix": "Student Mark Out Of 10:",
+    "extended_signature_instructions": "Grade a code snippet according to how well it answers a question on a scale of 0-10. Use the gold standard to guide your grading.",
+    "extended_signature_prefix": "Student Mark Out Of 10:"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "prog": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature_instructions": "Grade a code snippet according to how well it answers a question and subquestion aspect on a scale of 0-10. Use the gold standard to guide your grading. ",
+    "signature_prefix": "Student Mark Out Of 10:",
+    "extended_signature_instructions": "Consider all aspects of the question and subquestion while evaluating the code snippet and assign a score ranging from 0-10 based on its relevance and accuracy.",
+    "extended_signature_prefix": "Code Evaluation Score:"
+  }
+}

@@ -1,0 +1,63 @@
+﻿Title:,"Programming Assignment (CSE1PE/PES 2025, Semester 1)",,
+Student ID:,,,
+Days late:,,,
+,,Mark,Max.
+Task 1,Response to Academic Integrity reflection questions,,5
+,SUBTOTAL,0,5
+,,,
+Task 2,Joins list elements from payload to make a single string,,2
+,Converts the message to lowercase,,2
+,Correctly displays output by calling the bot_say() function,,2
+,Includes an additional test call to bot_shout() with a different (but appropriately typed) argument,,2
+,SUBTOTAL,0,8
+,,,
+Task 3,Uses data from the payload to determine the numbers needed for multiplication,,3
+,Performs multiplication using an appropriate expression,,1
+,Converts elements in the payload to an appropriate type,,2
+,Displays the result as an equation using the bot_say() function,,2
+,"Displays both numbers in the output exactly as the user typed them (in the same order), but the answer to 4 decimal places",,2
+,SUBTOTAL,0,10
+,,,
+Task 4,"Correct function definition (def, function name, parameters)",,2
+,Converts elements in the payload to an appropriate type,,2
+,Uses a loop to repeatedly call bot_say(),,2
+,The loop repeats the correct number of times,,2
+,"The correct numbers are displayed, with one number per chatbot message",,2
+,"The bot aggregates the sum of counted values and, after finishing counting, uses `bot_say()` to display the total sum.",,3
+,The bot correctly counts up from one when only a single value is provided in the payload,,2
+,SUBTOTAL,0,15
+,,,
+Task 5,Correct definition of the list (as a constant) – list literal is correct,,3
+,Correct definition of the list (as a constant) – constant name is in capitals,,1
+,Correct function definition,,2
+,Makes a random topic selection when the payload is empty using the random module,,3
+,Uses the list to find the correct topic number,,2
+,Displays the correct topic number and name for the given payload,,2
+,Program behaviour otherwise matches the flowchart,,2
+,SUBTOTAL,0,15
+,,,
+Task 6,Correct definition of the dictionary constant – dict literal is correct,,4
+,Correct definition of the dictionary constant – constant name is in caps,,1
+,Correct function definition,,2
+,Correct function behaviour,,4
+,Function uses the dictionary to look up the function object associated with a command name,,2
+,Appropriate output is produced for unknown commands,,2
+,SUBTOTAL,0,15
+,,,
+Task 7,Repeatedly asks for user input using chat_input(),,4
+,Case insensitive command recognition,,2
+,Finishes gracefully on !quit command,,4
+,Uses the dispatch_bot_command() function to dispatch other commands,,4
+,Program behaviour otherwise matches the flowchart,,6
+,SUBTOTAL,0,20
+,,,
+Overall,Adherence to instructions,,3
+,Deliberate and intentional programming,,3
+,Consistency of coding style across solutions,,3
+,Readability and clarity of code,,3
+,SUBTOTAL,0,12
+,,,
+Comments,,,
+,,,
+,LATE PENALTY,0,
+,GRAND TOTAL,0,100

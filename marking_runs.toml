@@ -1,0 +1,24 @@
+[question_subquestion_v2]
+docstring = "Grade a code snippet according to how well it answers a question and subquestion aspect on a scale of 0-10"
+
+[question_subquestion_v2.input_fields ]
+code = "code snippet"
+question_text = "Question description"
+subquestion = "Subquestion Aspect"
+
+[question_subquestion_v2.output_fields ]
+student_mark_out_of_10 = "Numeric grade between 0-10"
+
+
+
+[question_subquestion_code]
+docstring = "Grade a code snippet according to how well it answers a question and subquestion aspect on a scale of 0-10. Use the gold standard to guide your grading. "
+
+[question_subquestion_code.input_fields ]
+answer_code= "Gold standard code snippet"
+code = "code snippet"
+question_text = "Question description"
+subquestion = "Subquestion Aspect"
+
+[question_subquestion_code.output_fields ]
+student_mark_out_of_10 = "Numeric grade between 0-10"
