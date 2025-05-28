@@ -1,0 +1,14 @@
+Task 2,First criterion,,2
+,Second criterion,,abc
+,Third criterion,,
+,SUBTOTAL,0,5
+,,,
+Task 99,Invalid task number,,3
+,Another criterion,,2
+,SUBTOTAL,0,5
+,,,
+Task 3,Missing some criteria,,10
+,SUBTOTAL,0,10
+,,,
+,Criterion without task,,5
+,Another orphaned criterion,,3
