@@ -348,7 +348,7 @@ class NotebookParser:
         return {
             'notebook_path': str(self.notebook_path),
             'total_cells': len(self.notebook_data['cells']) if self.notebook_data else 0,
-            'tasks_found': len(self.tasks),
+            'tasks_found': tasks_with_code,  # Number of tasks with actual code
             'tasks_with_code': tasks_with_code,
             'expected_tasks': self.EXPECTED_TASK_COUNT,
             'all_tasks_present': self.has_all_tasks(),

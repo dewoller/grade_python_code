@@ -20,6 +20,11 @@ from src.marking.assignment_marker import AssignmentMarker, AssignmentMarkingErr
 # Initialize colorama for cross-platform colored output
 colorama_init()
 
+# Version information
+__version__ = "1.0.0"
+__author__ = "Academic Marking System"
+__description__ = "Automated programming assignment marking tool using DSPy and OpenAI"
+
 
 @click.command()
 @click.option(
@@ -73,6 +78,26 @@ colorama_init()
     type=str,
     help="Student ID (defaults to notebook filename without extension)",
 )
+@click.option(
+    "--continue-from",
+    type=str,
+    help="Continue batch processing from specific student ID",
+)
+@click.option(
+    "--json-output",
+    is_flag=True,
+    help="Generate JSON output for integration",
+)
+@click.option(
+    "--validate",
+    is_flag=True,
+    help="Run validation mode to check setup",
+)
+@click.option(
+    "--version",
+    is_flag=True,
+    help="Show version information",
+)
 def cli(
     notebook: Path,
     rubric: Path,
@@ -82,6 +107,10 @@ def cli(
     debug: bool,
     dry_run: bool,
     student_id: str,
+    continue_from: str,
+    json_output: bool,
+    validate: bool,
+    version: bool,
 ):
     """
     Mark programming assignments from Jupyter notebooks.
@@ -89,6 +118,16 @@ def cli(
     This tool processes student notebooks, evaluates them against a rubric,
     and generates Excel marking sheets with scores and feedback.
     """
+    # Handle version request
+    if version:
+        _show_version()
+        return
+    
+    # Handle validation mode
+    if validate:
+        _run_validation_mode(notebook, rubric, model, output_dir, verbose, debug)
+        return
+    
     # Setup logging based on verbosity flags
     logger = setup_logging(verbose=verbose, debug=debug)
     
@@ -133,7 +172,7 @@ def cli(
         if dry_run:
             _run_dry_run(marker, student_id, str(notebook), str(rubric))
         else:
-            _run_marking(marker, student_id, str(notebook), str(rubric), start_time)
+            _run_marking(marker, student_id, str(notebook), str(rubric), start_time, json_output)
         
     except FileNotFoundError as e:
         logger.error(f"File not found: {e}")
@@ -271,7 +310,7 @@ def _run_dry_run(marker: AssignmentMarker, student_id: str, notebook_path: str, 
 
 
 def _run_marking(marker: AssignmentMarker, student_id: str, notebook_path: str, 
-                 rubric_path: str, start_time: float) -> None:
+                 rubric_path: str, start_time: float, json_output: bool = False) -> None:
     """Run the actual marking process."""
     _print_info(f"Processing student: {student_id}")
     
@@ -288,6 +327,10 @@ def _run_marking(marker: AssignmentMarker, student_id: str, notebook_path: str,
         # Display statistics
         stats = marker.get_statistics()
         _display_statistics(stats)
+        
+        # Generate JSON output if requested
+        if json_output:
+            _generate_json_output(result, total_time, stats)
         
     except Exception as e:
         _print_error(f"Marking failed: {e}")
@@ -367,6 +410,116 @@ def _display_statistics(stats: dict) -> None:
     click.echo(f"  • Error Rate: {stats['error_rate']:.1%}")
     if stats['total_api_calls'] > 0:
         click.echo(f"  • Avg Time per API Call: {stats['total_processing_time'] / stats['total_api_calls']:.1f}s")
+
+
+def _show_version() -> None:
+    """Display version information."""
+    click.echo(click.style(f"Academic Marking System v{__version__}", fg="cyan", bold=True))
+    click.echo(f"Description: {__description__}")
+    click.echo(f"Author: {__author__}")
+    click.echo("\nDependencies:")
+    try:
+        import dspy
+        import openai
+        import pandas as pd
+        click.echo(f"  • DSPy: {dspy.__version__}")
+        click.echo(f"  • OpenAI: {openai.__version__}")
+        click.echo(f"  • Pandas: {pd.__version__}")
+    except ImportError as e:
+        click.echo(f"  • Warning: Could not import some dependencies: {e}")
+
+
+def _run_validation_mode(notebook: Path, rubric: Path, model: str, output_dir: Path, 
+                        verbose: bool, debug: bool) -> None:
+    """Run comprehensive validation mode."""
+    logger = setup_logging(verbose=verbose, debug=debug)
+    _print_info("Running comprehensive validation mode...")
+    
+    issues = []
+    
+    # Check environment
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        issues.append("OPENAI_API_KEY environment variable not set")
+    else:
+        _print_success("API key found")
+    
+    # Check file accessibility
+    try:
+        _validate_inputs(notebook, rubric, output_dir, logger)
+        _print_success("Input files validated")
+    except (FileNotFoundError, InvalidFileError) as e:
+        issues.append(f"File validation error: {e}")
+    
+    # Test model connectivity (if API key available)
+    if api_key and not issues:
+        try:
+            marker = AssignmentMarker(model_name=model, output_dir=str(output_dir), verbosity=1)
+            validation_issues = marker.validate_setup(str(notebook), str(rubric))
+            if validation_issues:
+                issues.extend(validation_issues)
+            else:
+                _print_success("DSPy models and connectivity validated")
+        except Exception as e:
+            issues.append(f"Model validation error: {e}")
+    
+    # Check write permissions
+    try:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        test_file = output_dir / "test_write.tmp"
+        test_file.write_text("test")
+        test_file.unlink()
+        _print_success("Output directory writable")
+    except Exception as e:
+        issues.append(f"Output directory error: {e}")
+    
+    # Display results
+    if issues:
+        _print_error("Validation failed:")
+        for issue in issues:
+            click.echo(f"  • {issue}")
+        sys.exit(1)
+    else:
+        _print_success("All validation checks passed!")
+        _print_info("System ready for marking")
+
+
+def _generate_json_output(result, total_time: float, stats: dict) -> None:
+    """Generate JSON output for integration."""
+    import json
+    from datetime import datetime
+    
+    json_data = {
+        "timestamp": datetime.now().isoformat(),
+        "student_id": result.student_id,
+        "total_score": result.total_score,
+        "max_points": result.max_points,
+        "percentage": (result.total_score / result.max_points * 100) if result.max_points > 0 else 0,
+        "status": result.status,
+        "processing_time_seconds": total_time,
+        "task_results": {},
+        "issues": result.issues,
+        "statistics": stats
+    }
+    
+    # Add task results
+    if result.task_results:
+        for task_number, task_result in result.task_results.items():
+            json_data["task_results"][f"task_{task_number}"] = {
+                "score": task_result.total_score,
+                "max_points": task_result.max_points,
+                "percentage": (task_result.total_score / task_result.max_points * 100) if task_result.max_points > 0 else 0,
+                "issues": task_result.issues
+            }
+    
+    # Save JSON file
+    json_filename = f"{result.student_id}_results.json"
+    json_path = Path(json_filename)
+    
+    with open(json_path, 'w') as f:
+        json.dump(json_data, f, indent=2)
+    
+    _print_success(f"JSON output generated: {json_filename}")
 
 
 if __name__ == "__main__":

@@ -145,7 +145,7 @@ class TestIntegrationWorkflow:
         marker = AssignmentMarker(
             model_name="gpt-4",
             output_dir=temp_output_dir,
-            verbose=True
+            verbosity=2
         )
         
         # Mock the criterion evaluator to return perfect scores
@@ -352,6 +352,13 @@ class TestIntegrationWorkflow:
 
 class TestErrorRecovery:
     """Test error recovery and graceful degradation using mocks."""
+
+    @pytest.fixture
+    def temp_output_dir(self):
+        """Create temporary directory for test outputs."""
+        temp_dir = tempfile.mkdtemp()
+        yield temp_dir
+        shutil.rmtree(temp_dir)
 
     def test_partial_evaluation_failure_mock(self, temp_output_dir):
         """Test workflow continues when some criteria fail to evaluate using mocks."""
